@@ -26,10 +26,26 @@ namespace wonky2048 {
 		backgroundLayer->setPosition(BoardOffset());
 		addChild(backgroundLayer, 0);
 		
+		scoreLabel_ = make_shared<LabelBMFont>();
+		scoreLabel_->initWithString("SCORE: 0", "Font_Score_Small.fnt");
+		scoreLabel_->setScale(0.5f);
+		scoreLabel_->setPosition(PointForPosition({0,3}).x, BoardOffset().y + BoardSize() + 10);
+		addChild(scoreLabel_.get());
+		
 		using namespace std::placeholders;
 //		eventListener_->onKeyPressed = std::bind(&BoardLayer::KeyPressed, this, _1, _2);
 		eventListener_->onKeyReleased = std::bind(&BoardLayer::KeyReleased, this, _1, _2);
 		Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(eventListener_.get(), this);
+		
+//		// add debug labels
+//		for (int row = 0; row < 4; row++) {
+//			for (int col = 0; col < 4; col++) {
+//				auto* label = LabelBMFont::create(to_string(row) + ", " + to_string(col), "Font_Score_Small.fnt");
+//				label->setScale(0.5f);
+//				label->setPosition(PointForPosition({row, col}));
+//				addChild(label);
+//			}
+//		}
 		
 		DrawTiles();
 		
@@ -44,6 +60,9 @@ namespace wonky2048 {
 		addChild(tileNode.get(), 1);
 		tileNode->setPosition(PointForPosition(pos));
 		tileNode->init();
+		
+		tileNode->setScale(0.0f);
+		tileNode->runAction(ScaleTo::create(0.2f, 0.8f));
 	}
 	
 	Point BoardLayer::BoardOffset() const {
@@ -64,7 +83,7 @@ namespace wonky2048 {
 	
 	Point BoardLayer::PointForPosition(TilePosition pos) const {
 		float x = (pos.Col() * TileSize()) + (TileSize() / 2.0f) + BoardOffset().x;
-		float y = (pos.Row() * TileSize()) + (TileSize() / 2.0f) + BoardOffset().y;
+		float y = ((3 - pos.Row()) * TileSize()) + (TileSize() / 2.0f) + BoardOffset().y;
 		return {x, y};
 	}
 	
@@ -81,11 +100,21 @@ namespace wonky2048 {
 		for (auto tileNode : tileNodes_) {
 			TilePtr tile = tileNode.first;
 			TileNodePtr node = tileNode.second;
-			
-			node->runAction(MoveTo::create(0.3f, PointForPosition(board_.PositionOfTile(tile))));
+			node->setString(to_string(tile->Value()));
+			try {
+				auto pos = board_.PositionOfTile(tile);
+				node->runAction(MoveTo::create(0.2f, PointForPosition(pos)));
+			} catch (...) {
+				node->runAction(Sequence::createWithTwoActions(ScaleTo::create(0.2f, 0.0f), CallFunc::create([=](){
+					tileNodes_.erase(tile);
+					node->removeFromParentAndCleanup(true); // tile no longer on board
+				})));
+			}
 		}
+		
+		scoreLabel_->setString("SCORE: " + to_string(board_.Score()));
 	}
-//	
+//
 //	void BoardLayer::MoveTileToPosition(TileNodePtr tile, TilePosition pos) {
 //		tile->setPosition(PointForPosition(pos));
 //	}

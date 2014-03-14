@@ -16,6 +16,8 @@ namespace wonky2048 {
 		
 		unsigned Value() const { return value_; }
 		void SetValue(unsigned value);
+		
+		void operator *=(int val);
 	private:
 		unsigned value_;
 	};

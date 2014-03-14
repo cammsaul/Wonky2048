@@ -14,7 +14,7 @@ namespace wonky2048 {
 	{}
 
 	bool GameScene::init() {
-		auto backgroundLayer = LayerColor::create(Color4B::WHITE);
+		auto backgroundLayer = LayerColor::create(Color4B::BLACK);
 		addChild(backgroundLayer);
 		
 		boardLayer_.init();

@@ -17,4 +17,9 @@ namespace wonky2048 {
 		assert(value % 2 == 0);
 		value_ = value;
 	}
+	
+	void Tile::operator *=(int val) {
+		assert(val == 2); // don't attempt to *= by non-multiple-of-2
+		value_ *= val;
+	}
 }

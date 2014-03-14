@@ -31,6 +31,8 @@ namespace wonky2048 {
 		shared_ptr<EventListenerKeyboard> eventListener_;
 		Board board_;
 		
+		shared_ptr<LabelBMFont> scoreLabel_ = nullptr;
+		
 		void AddTileNode(TilePtr tile);
 		void DrawTiles();
 //		void MoveTileToPosition(TileNodePtr tile, TilePosition pos);
