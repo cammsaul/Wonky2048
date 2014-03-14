@@ -35,16 +35,14 @@ namespace wonky2048 {
 		
 		using namespace std::placeholders;
 		eventListenerKeyboard_->onKeyReleased = std::bind(&BoardLayer::KeyReleased, this, _1, _2);
-		Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(eventListenerKeyboard_.get(), this);
+		Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(eventListenerKeyboard_, this);
 		
-		eventListenerTouch_->onTouchBegan = std::bind(&BoardLayer::TouchBegan, this, _1, _2);
+		eventListenerTouch_ = EventListenerTouchOneByOne::create();
+		eventListenerTouch_->onTouchBegan = bind(&BoardLayer::TouchBegan, this, _1, _2);
 		eventListenerTouch_->onTouchEnded = std::bind(&BoardLayer::TouchEnded, this, _1, _2);
-		eventListenerTouch_->setSwallowTouches(true);
-		Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(eventListenerTouch_.get(), this);
-		
-		
-		
-//		scheduleUpdate();
+		Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(eventListenerTouch_, this);
+
+		//		scheduleUpdate();p
 		
 //		// add debug labels
 //		for (int row = 0; row < 4; row++) {
@@ -134,8 +132,11 @@ namespace wonky2048 {
 		DrawTiles();
 	}
 	
+	void BoardLayer::update(float dt) {
+		
+	}
+	
 	bool BoardLayer::TouchBegan(Touch* touch, Event* event) {
-		cout << "HERE!!" << endl;
 		return true;
 	}
 	
@@ -144,18 +145,20 @@ namespace wonky2048 {
 		auto endLocation = touch->getLocationInView();
 		auto xDelta = endLocation.x - startLocation.x;
 		auto yDelta = endLocation.y - startLocation.y;
+		cout << "x: " << xDelta << " y: " << yDelta << endl;
 		
 		if (abs(xDelta) < 50 && abs(yDelta) < 50) return; // min swipe dist
 		
-		if (abs(yDelta) < abs(xDelta)) {
-			// horizontal swipe
+		if (abs(yDelta) > abs(xDelta)) {
+			// vertical swipe
 			if (yDelta < 0)	board_.ApplyUp();
-			else		board_.ApplyDown();
+			else			board_.ApplyDown();
 		} else {
 			if (xDelta < 0)	board_.ApplyLeft();
-			else		board_.ApplyRight();
-				
+			else			board_.ApplyRight();
 		}
+		
+		DrawTiles();
 	}
 
 

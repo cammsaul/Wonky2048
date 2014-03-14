@@ -29,10 +29,12 @@ namespace wonky2048 {
 		bool TouchBegan(Touch*, Event*);
 		void TouchEnded(Touch*, Event*);
 		
+		virtual void update(float dt) override;
+		
 	private:
 		unordered_map<TilePtr, TileNodePtr> tileNodes_;
-		shared_ptr<EventListenerKeyboard> eventListenerKeyboard_;
-		shared_ptr<EventListenerTouchOneByOne> eventListenerTouch_;
+		EventListenerKeyboard *eventListenerKeyboard_;
+		EventListenerTouchOneByOne *eventListenerTouch_;
 		Board board_;
 		
 		shared_ptr<LabelBMFont> scoreLabel_ = nullptr;

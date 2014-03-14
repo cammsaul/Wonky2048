@@ -18,8 +18,8 @@ namespace wonky2048 {
 		addChild(backgroundLayer);
 		
 		boardLayer_.init();
-		auto boardSize = getContentSize().width * 0.8f;
-		boardLayer_.setContentSize({boardSize, boardSize});
+//		auto boardSize = getContentSize().width * 0.8f;
+//		boardLayer_.setContentSize({boardSize, boardSize});
 		addChild(&boardLayer_);
 				
 		return true;
