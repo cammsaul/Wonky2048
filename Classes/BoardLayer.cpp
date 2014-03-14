@@ -15,7 +15,8 @@ inline bool IsRight(EventKeyboard::KeyCode keyCode) { return keyCode == EventKey
 
 namespace wonky2048 {
 	BoardLayer::BoardLayer():
-		eventListener_(EventListenerKeyboard::create())
+		eventListenerKeyboard_(EventListenerKeyboard::create()),
+		eventListenerTouch_(EventListenerTouchOneByOne::create())
 	{
 	}
 	
@@ -33,9 +34,17 @@ namespace wonky2048 {
 		addChild(scoreLabel_.get());
 		
 		using namespace std::placeholders;
-//		eventListener_->onKeyPressed = std::bind(&BoardLayer::KeyPressed, this, _1, _2);
-		eventListener_->onKeyReleased = std::bind(&BoardLayer::KeyReleased, this, _1, _2);
-		Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(eventListener_.get(), this);
+		eventListenerKeyboard_->onKeyReleased = std::bind(&BoardLayer::KeyReleased, this, _1, _2);
+		Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(eventListenerKeyboard_.get(), this);
+		
+		eventListenerTouch_->onTouchBegan = std::bind(&BoardLayer::TouchBegan, this, _1, _2);
+		eventListenerTouch_->onTouchEnded = std::bind(&BoardLayer::TouchEnded, this, _1, _2);
+		eventListenerTouch_->setSwallowTouches(true);
+		Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(eventListenerTouch_.get(), this);
+		
+		
+		
+//		scheduleUpdate();
 		
 //		// add debug labels
 //		for (int row = 0; row < 4; row++) {
@@ -114,10 +123,6 @@ namespace wonky2048 {
 		
 		scoreLabel_->setString("SCORE: " + to_string(board_.Score()));
 	}
-//
-//	void BoardLayer::MoveTileToPosition(TileNodePtr tile, TilePosition pos) {
-//		tile->setPosition(PointForPosition(pos));
-//	}
 	
 	void BoardLayer::KeyReleased(EventKeyboard::KeyCode keyCode, Event* event) {
 		printf("Read key: left: %d, right: %d, up: %d, down: %d\n", IsLeft(keyCode), IsRight(keyCode), IsUp(keyCode), IsDown(keyCode));
@@ -128,5 +133,30 @@ namespace wonky2048 {
 		
 		DrawTiles();
 	}
+	
+	bool BoardLayer::TouchBegan(Touch* touch, Event* event) {
+		cout << "HERE!!" << endl;
+		return true;
+	}
+	
+	void BoardLayer::TouchEnded(Touch* touch, Event* event) {
+		auto startLocation = touch->getStartLocationInView();
+		auto endLocation = touch->getLocationInView();
+		auto xDelta = endLocation.x - startLocation.x;
+		auto yDelta = endLocation.y - startLocation.y;
+		
+		if (abs(xDelta) < 50 && abs(yDelta) < 50) return; // min swipe dist
+		
+		if (abs(yDelta) < abs(xDelta)) {
+			// horizontal swipe
+			if (yDelta < 0)	board_.ApplyUp();
+			else		board_.ApplyDown();
+		} else {
+			if (xDelta < 0)	board_.ApplyLeft();
+			else		board_.ApplyRight();
+				
+		}
+	}
+
 
 }

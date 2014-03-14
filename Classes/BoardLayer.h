@@ -26,16 +26,19 @@ namespace wonky2048 {
 		float BoardSize() const;
 		float TileSize() const;
 		
+		bool TouchBegan(Touch*, Event*);
+		void TouchEnded(Touch*, Event*);
+		
 	private:
 		unordered_map<TilePtr, TileNodePtr> tileNodes_;
-		shared_ptr<EventListenerKeyboard> eventListener_;
+		shared_ptr<EventListenerKeyboard> eventListenerKeyboard_;
+		shared_ptr<EventListenerTouchOneByOne> eventListenerTouch_;
 		Board board_;
 		
 		shared_ptr<LabelBMFont> scoreLabel_ = nullptr;
 		
 		void AddTileNode(TilePtr tile);
 		void DrawTiles();
-//		void MoveTileToPosition(TileNodePtr tile, TilePosition pos);
 		
 //		void KeyPressed(EventKeyboard::KeyCode, Event*);
 		void KeyReleased(EventKeyboard::KeyCode, Event*);

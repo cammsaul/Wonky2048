@@ -21,7 +21,7 @@ namespace wonky2048 {
 		auto boardSize = getContentSize().width * 0.8f;
 		boardLayer_.setContentSize({boardSize, boardSize});
 		addChild(&boardLayer_);
-		
+				
 		return true;
 	}
 }
